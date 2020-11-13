@@ -199,6 +199,9 @@ class SceneCroppingCalculator : public CalculatorBase {
   int target_height_ = -1;
   double target_aspect_ratio_ = -1.0;
 
+  // output file path
+  std::string output_file_path_;
+
   // Input video frame size and format.
   int frame_width_ = -1;
   int frame_height_ = -1;

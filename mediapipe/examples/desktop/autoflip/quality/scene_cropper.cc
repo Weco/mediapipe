@@ -15,7 +15,7 @@
 #include "mediapipe/examples/desktop/autoflip/quality/scene_cropper.h"
 
 #include <memory>
-
+#include <fstream>
 #include "absl/memory/memory.h"
 #include "mediapipe/examples/desktop/autoflip/quality/polynomial_regression_path_solver.h"
 #include "mediapipe/examples/desktop/autoflip/quality/utils.h"
@@ -87,6 +87,7 @@ namespace autoflip {
     const std::vector<cv::Mat>& scene_frames_or_empty,
     const std::vector<FocusPointFrame>& focus_point_frames,
     const std::vector<FocusPointFrame>& prior_focus_point_frames,
+    const std::string &output_file_name,
     int top_static_border_size, int bottom_static_border_size,
     const bool continue_last_scene, std::vector<cv::Rect>* crop_from_location,
     std::vector<cv::Mat>* cropped_frames) {
@@ -123,6 +124,17 @@ namespace autoflip {
 
     scene_frame_xforms =
         std::vector<cv::Mat>(all_xforms.begin() + num_prior, all_xforms.end());
+
+    // append center-aligned dx, dy to csv file
+    std::ofstream outfile;
+    outfile.open(output_file_name, std::ios_base::app);
+    for (cv::Mat &xform : scene_frame_xforms)
+    {
+        float dx = xform.at<float>(0, 2);
+        float dy = xform.at<float>(1, 2);
+        outfile << dx << ", " << dy << std::endl;
+    }
+    outfile.close();
 
     // Convert the matrix from center-aligned to upper-left aligned.
     for (cv::Mat& xform : scene_frame_xforms) {

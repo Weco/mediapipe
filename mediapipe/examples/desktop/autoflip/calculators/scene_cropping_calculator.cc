@@ -76,6 +76,8 @@ constexpr char kExternalRenderingFullVid[] = "EXTERNAL_RENDERING_FULL_VID";
   if (cc->InputSidePackets().HasTag(kAspectRatio)) {
     cc->InputSidePackets().Tag(kAspectRatio).Set<std::string>();
   }
+  RET_CHECK(cc->InputSidePackets().HasTag("OUTPUT_FILE_PATH"));
+  cc->InputSidePackets().Tag("OUTPUT_FILE_PATH").Set<std::string>();
   if (cc->Inputs().HasTag(kInputVideoFrames)) {
     cc->Inputs().Tag(kInputVideoFrames).Set<ImageFrame>();
   }
@@ -132,10 +134,11 @@ constexpr char kExternalRenderingFullVid[] = "EXTERNAL_RENDERING_FULL_VID";
               cc->Inputs().HasTag(kOutputCroppedFrames)))
       << "CROPPED_FRAMES (internal cropping) has been set as an output without "
          "VIDEO_FRAMES (video data) input.";
-  RET_CHECK(cc->Outputs().HasTag(kExternalRenderingPerFrame) ||
-            cc->Outputs().HasTag(kExternalRenderingFullVid) ||
-            cc->Outputs().HasTag(kOutputCroppedFrames))
-      << "At leaset one output stream must be specified";
+  // RET_CHECK(cc->Outputs().HasTag(kExternalRenderingPerFrame) ||
+  //           cc->Outputs().HasTag(kExternalRenderingFullVid) ||
+  //           cc->Outputs().HasTag(kOutputCroppedFrames))
+  //     << "At leaset one output stream must be specified";
+
   return ::mediapipe::OkStatus();
 }
 
@@ -175,6 +178,12 @@ constexpr char kExternalRenderingFullVid[] = "EXTERNAL_RENDERING_FULL_VID";
   should_perform_frame_cropping_ = cc->Outputs().HasTag(kOutputCroppedFrames);
   scene_camera_motion_analyzer_ = absl::make_unique<SceneCameraMotionAnalyzer>(
       options_.scene_camera_motion_analyzer_options());
+
+  // handles output file details, removing it if it already exists
+  output_file_path_ =
+      cc->InputSidePackets().Tag("OUTPUT_FILE_PATH").Get<std::string>();
+  remove(output_file_path_.c_str());
+
   return ::mediapipe::OkStatus();
 }
 
@@ -579,6 +588,7 @@ void SceneCroppingCalculator::FilterKeyFrameInfo() {
   MP_RETURN_IF_ERROR(scene_cropper_->CropFrames(
       scene_summary, scene_frame_timestamps_, is_key_frames_,
       scene_frames_or_empty_, focus_point_frames, prior_focus_point_frames_,
+      output_file_path_,
       top_static_border_size, bottom_static_border_size, continue_last_scene_,
       &crop_from_locations, cropped_frames_ptr));
 

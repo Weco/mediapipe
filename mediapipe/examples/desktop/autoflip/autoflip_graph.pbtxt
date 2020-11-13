@@ -152,12 +152,12 @@ node {
 node {
   calculator: "SceneCroppingCalculator"
   input_side_packet: "EXTERNAL_ASPECT_RATIO:aspect_ratio"
+  input_side_packet: "OUTPUT_FILE_PATH:output_file_path"
   input_stream: "VIDEO_FRAMES:video_raw"
   input_stream: "KEY_FRAMES:video_frames_scaled_downsampled"
   input_stream: "DETECTION_FEATURES:salient_regions"
   input_stream: "STATIC_FEATURES:borders"
   input_stream: "SHOT_BOUNDARIES:shot_change"
-  output_stream: "CROPPED_FRAMES:cropped_frames"
   options: {
     [mediapipe.autoflip.SceneCroppingCalculatorOptions.ext]: {
       max_scene_size: 600
@@ -173,30 +173,6 @@ node {
         overlay_opacity: 0.6
       }
       target_size_type: MAXIMIZE_TARGET_DIMENSION
-    }
-  }
-}
-
-# ENCODING(required): encode the video stream for the final cropped output.
-node {
-  calculator: "VideoPreStreamCalculator"
-  # Fetch frame format and dimension from input frames.
-  input_stream: "FRAME:cropped_frames"
-  # Copying frame rate and duration from original video.
-  input_stream: "VIDEO_PRESTREAM:video_header"
-  output_stream: "output_frames_video_header"
-}
-
-node {
-  calculator: "OpenCvVideoEncoderCalculator"
-  input_stream: "VIDEO:cropped_frames"
-  input_stream: "VIDEO_PRESTREAM:output_frames_video_header"
-  input_side_packet: "OUTPUT_FILE_PATH:output_video_path"
-  input_side_packet: "AUDIO_FILE_PATH:audio_path"
-  options: {
-    [mediapipe.OpenCvVideoEncoderCalculatorOptions.ext]: {
-      codec: "avc1"
-      video_format: "mp4"
     }
   }
 }
