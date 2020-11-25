@@ -1,6 +1,6 @@
 # Autoflip graph that only renders the final cropped video. For use with
 # end user applications.
-max_queue_size: -1
+max_queue_size: 2
 
 # VIDEO_PREP: Decodes an input video file into images and a video header.
 node {
@@ -166,7 +166,7 @@ node {
         score_aggregation_type: CONSTANT
       }
       scene_camera_motion_analyzer_options: {
-        motion_stabilization_threshold_percent: 0.5
+        motion_stabilization_threshold_percent: 0.6
         salient_point_bound: 0.499
       }
       padding_parameters: {
