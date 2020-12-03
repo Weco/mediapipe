@@ -108,7 +108,7 @@ class OpenCvVideoDecoderCalculator : public CalculatorBase {
     }
     width_ = static_cast<int>(cap_->get(cv::CAP_PROP_FRAME_WIDTH));
     height_ = static_cast<int>(cap_->get(cv::CAP_PROP_FRAME_HEIGHT));
-    double fps = static_cast<double>(cap_->get(cv::CAP_PROP_FPS));
+    fps = static_cast<double>(cap_->get(cv::CAP_PROP_FPS));
     frame_count_ = static_cast<int>(cap_->get(cv::CAP_PROP_FRAME_COUNT));
     // Unfortunately, cap_->get(cv::CAP_PROP_FORMAT) always returns CV_8UC1
     // back. To get correct image format, we read the first frame from the video
@@ -184,7 +184,8 @@ class OpenCvVideoDecoderCalculator : public CalculatorBase {
     auto image_frame = absl::make_unique<ImageFrame>(format_, width_, height_,
                                                      /*alignment_boundary=*/1);
     // Use microsecond as the unit of time.
-    Timestamp timestamp(cap_->get(cv::CAP_PROP_POS_MSEC) * 1000);
+    int frame_number(cap_->get(cv::CAP_PROP_POS_FRAMES));
+    Timestamp timestamp(((double) frame_number / fps) * 1000000);
     if (format_ == ImageFormat::GRAY8) {
       cv::Mat frame = formats::MatView(image_frame.get());
       cap_->read(frame);
@@ -232,6 +233,7 @@ class OpenCvVideoDecoderCalculator : public CalculatorBase {
   std::unique_ptr<cv::VideoCapture> cap_;
   int width_;
   int height_;
+  double fps;
   int frame_count_;
   int decoded_frames_ = 0;
   ImageFormat::Format format_;
