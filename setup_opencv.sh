@@ -38,8 +38,8 @@ workspace_file="$( cd "$(dirname "$0")" ; pwd -P )"/WORKSPACE
 if [ -z "$1" ]
   then
     echo "Installing OpenCV from source"
-    sudo apt update && sudo apt install build-essential git
-    sudo apt install cmake ffmpeg libavformat-dev libdc1394-22-dev libgtk2.0-dev \
+     apt update && apt install -y build-essential git
+     apt install -y cmake ffmpeg libavformat-dev libdc1394-22-dev libgtk2.0-dev \
                      libjpeg-dev libpng-dev libswscale-dev libtbb2 libtbb-dev \
                      libtiff-dev
     rm -rf /tmp/build_opencv
@@ -66,14 +66,14 @@ if [ -z "$1" ]
           -DBUILD_opencv_structured_light=OFF -DBUILD_opencv_surface_matching=OFF \
           -DBUILD_opencv_world=OFF -DBUILD_opencv_xobjdetect=OFF -DBUILD_opencv_xphoto=OFF
     make -j 16
-    sudo make install
+    make install
     rm -rf /tmp/build_opencv
     echo "OpenCV has been built. You can find the header files and libraries in /usr/local/include/opencv2/ and /usr/local/lib"
 
     # https://github.com/cggos/dip_cvqt/issues/1#issuecomment-284103343
-    sudo touch /etc/ld.so.conf.d/mp_opencv.conf
-    sudo bash -c  "echo /usr/local/lib >> /etc/ld.so.conf.d/mp_opencv.conf"
-    sudo ldconfig -v
+     touch /etc/ld.so.conf.d/mp_opencv.conf
+     bash -c  "echo /usr/local/lib >> /etc/ld.so.conf.d/mp_opencv.conf"
+     ldconfig -v
 fi
 
 # Modify the build file.
