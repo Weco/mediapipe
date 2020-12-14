@@ -54,11 +54,11 @@ node {
   output_stream: "IS_SHOT_CHANGE:shot_change"
   options {
     [mediapipe.autoflip.ShotBoundaryCalculatorOptions.ext] {
-      min_shot_span: 0.2
-      min_motion: 0.3
-      window_size: 15
+      min_shot_span: 2
+      min_motion: 0.2
+      window_size: 3
       min_shot_measure: 10
-      min_motion_with_shot_measure: 0.05
+      min_motion_with_shot_measure: 0.005
     }
   }
 }
